@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LydraCare</title>
+<style>
+  :root { color-scheme: light dark; --bg:#F8F5EE; --fg:#1b1b18; --brand:#6B7D5E; --card:#ffffff; --muted:#6c6f66; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#000; --fg:#f2f2ee; --card:#262522; --muted:#a4a79f; } }
+  * { box-sizing: border-box; }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
+         background:var(--bg); color:var(--fg); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  main { width:100%; max-width:440px; background:var(--card); border-radius:24px; padding:28px 22px; text-align:center;
+         box-shadow:0 6px 24px rgba(0,0,0,.08); }
+  h1 { margin:0 0 8px; font-size:26px; }
+  p { margin:0 0 20px; line-height:1.5; color:var(--muted); font-size:17px; }
+  a.btn { display:block; padding:18px 16px; margin:12px 0; border-radius:16px; font-size:19px; font-weight:700;
+          text-decoration:none; }
+  a.primary { background:var(--brand); color:#fff; }
+  a.secondary { border:2px solid var(--brand); color:var(--brand); }
+  [hidden] { display:none !important; }
+  small { display:block; margin-top:18px; color:var(--muted); font-size:14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title"></h1>
+  <p id="body"></p>
+  <a id="open" class="btn primary" href="#" hidden></a>
+  <a id="install" class="btn secondary" href="#" hidden></a>
+  <small id="hint"></small>
+</main>
+<script>
+  // ---- EDIT THIS: the download link of your preview APK (EAS build page → Install / Download).
+  // Leave the placeholder as-is until you have one: the install button stays hidden.
+  var APK_URL = "PASTE_YOUR_PREVIEW_APK_LINK_HERE";
+
+  var TEXT = {
+    en: { title: "Open LydraCare", body: "Your caregiver set up your account. Tap the button to open the app and finish in a minute.",
+          open: "Open the app", install: "Install the app", noToken: "This page is for invitation links sent by your caregiver.",
+          hint: "If nothing happens, install the app first, then tap your caregiver's link again." },
+    es: { title: "Abrir LydraCare", body: "Tu cuidador configuró tu cuenta. Toca el botón para abrir la app y terminar en un minuto.",
+          open: "Abrir la app", install: "Instalar la app", noToken: "Esta página es para los enlaces de invitación que envía tu cuidador.",
+          hint: "Si no pasa nada, instala primero la app y vuelve a tocar el enlace de tu cuidador." },
+    fr: { title: "Ouvrir LydraCare", body: "Votre aidant a créé votre compte. Touchez le bouton pour ouvrir l'application et terminer en une minute.",
+          open: "Ouvrir l'application", install: "Installer l'application", noToken: "Cette page sert aux liens d'invitation envoyés par votre aidant.",
+          hint: "Si rien ne se passe, installez d'abord l'application, puis touchez de nouveau le lien de votre aidant." }
+  };
+
+  var lang = (navigator.language || "en").slice(0, 2).toLowerCase();
+  var t = TEXT[lang] || TEXT.en;
+  document.documentElement.lang = TEXT[lang] ? lang : "en";
+  document.getElementById("title").textContent = t.title;
+
+  var match = location.pathname.match(/\/senior-claim\/([0-9a-fA-F-]{36})/);
+  var body = document.getElementById("body");
+
+  if (match) {
+    body.textContent = t.body;
+    var open = document.getElementById("open");
+    // Works even when Android has not verified the https link (custom scheme fallback).
+    open.href = "lydracare://senior-claim/" + match[1];
+    open.textContent = t.open;
+    open.hidden = false;
+    document.getElementById("hint").textContent = t.hint;
+  } else {
+    body.textContent = t.noToken;
+  }
+
+  if (APK_URL && APK_URL.indexOf("http") === 0) {
+    var install = document.getElementById("install");
+    install.href = APK_URL;
+    install.textContent = t.install;
+    install.hidden = false;
+  }
+</script>
+</body>
+</html>
