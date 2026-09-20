@@ -5,7 +5,8 @@
       "namespace": "android_app",
       "package_name": "com.lydracare.app",
       "sha256_cert_fingerprints": [
-        "A6:4F:0A:FA:18:1C:5B:62:7F:C0:7A:BE:DA:17:1C:31:6B:C8:C8:E8:13:B5:9A:30:C3:91:BF:CD:13:E5:FE:5F"
+        "A6:4F:0A:FA:18:1C:5B:62:7F:C0:7A:BE:DA:17:1C:31:6B:C8:C8:E8:13:B5:9A:30:C3:91:BF:CD:13:E5:FE:5F",
+        "0D:2C:CC:1B:9A:FB:45:3B:A7:DD:15:0B:B4:0A:9C:F6:77:55:E0:B9:80:14:D3:8F:89:CF:81:5D:37:12:18:F2"
       ]
     }
   }
