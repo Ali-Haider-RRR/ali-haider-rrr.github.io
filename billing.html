@@ -13,35 +13,57 @@
   main { width:100%; max-width:440px; background:var(--card); border-radius:24px; padding:28px 22px; text-align:center;
          box-shadow:0 6px 24px rgba(0,0,0,.08); }
   h1 { margin:0 0 10px; font-size:26px; color:var(--brand); }
-  p { margin:0; line-height:1.5; color:var(--muted); font-size:18px; }
+  p { margin:0 0 22px; line-height:1.5; color:var(--muted); font-size:18px; }
+  a.btn { display:block; padding:18px 16px; border-radius:16px; font-size:20px; font-weight:700;
+          text-decoration:none; background:var(--brand); color:#fff; }
 </style>
 </head>
 <body>
 <main>
   <h1 id="title"></h1>
   <p id="body"></p>
+  <a id="open" class="btn" href="#"></a>
 </main>
 <script>
   // Stripe sends the caregiver here after Checkout / the billing portal (?status=success|cancel|portal).
-  // The app refreshes its plan by itself when the caregiver switches back to it.
+  // This page hands them straight back to the LydraCare app (lydracare://billing) — automatically, and via the
+  // big button if the browser blocks the automatic jump. The app then shows "<Plan> plan activated".
   var TEXT = {
-    en: { success: ["Payment received", "Thank you! Go back to the LydraCare app — your plan is being activated."],
-          cancel:  ["Payment cancelled", "No charge was made. Go back to the LydraCare app whenever you are ready."],
-          portal:  ["All set", "Your changes are saved. Go back to the LydraCare app."] },
-    es: { success: ["Pago recibido", "¡Gracias! Vuelve a la app LydraCare: tu plan se está activando."],
-          cancel:  ["Pago cancelado", "No se hizo ningún cargo. Vuelve a la app LydraCare cuando quieras."],
-          portal:  ["Listo", "Tus cambios se guardaron. Vuelve a la app LydraCare."] },
-    fr: { success: ["Paiement reçu", "Merci ! Retournez dans l'application LydraCare — votre offre est en cours d'activation."],
-          cancel:  ["Paiement annulé", "Aucun montant n'a été débité. Retournez dans l'application LydraCare quand vous voulez."],
-          portal:  ["C'est fait", "Vos modifications sont enregistrées. Retournez dans l'application LydraCare."] }
+    en: { open: "Open LydraCare",
+          success: ["Payment received", "Thank you! Taking you back to LydraCare…"],
+          cancel:  ["Payment cancelled", "No charge was made. Taking you back to LydraCare…"],
+          portal:  ["All set", "Your changes are saved. Taking you back to LydraCare…"] },
+    es: { open: "Abrir LydraCare",
+          success: ["Pago recibido", "¡Gracias! Te llevamos de vuelta a LydraCare…"],
+          cancel:  ["Pago cancelado", "No se hizo ningún cargo. Te llevamos de vuelta a LydraCare…"],
+          portal:  ["Listo", "Tus cambios se guardaron. Te llevamos de vuelta a LydraCare…"] },
+    fr: { open: "Ouvrir LydraCare",
+          success: ["Paiement reçu", "Merci ! Retour vers LydraCare…"],
+          cancel:  ["Paiement annulé", "Aucun montant n'a été débité. Retour vers LydraCare…"],
+          portal:  ["C'est fait", "Vos modifications sont enregistrées. Retour vers LydraCare…"] }
   };
   var lang = (navigator.language || "en").slice(0, 2);
   if (!TEXT[lang]) lang = "en";
   document.documentElement.lang = lang;
+
   var status = new URLSearchParams(location.search).get("status");
   if (!TEXT[lang][status]) status = "success";
   document.getElementById("title").textContent = TEXT[lang][status][0];
   document.getElementById("body").textContent = TEXT[lang][status][1];
+
+  var query = "?status=" + encodeURIComponent(status);
+  var isAndroid = /android/i.test(navigator.userAgent);
+  // Android Chrome: an intent:// link opens the app reliably; elsewhere the plain custom scheme.
+  var appUrl = isAndroid
+    ? "intent://billing" + query + "#Intent;scheme=lydracare;package=com.lydracare.app;end"
+    : "lydracare://billing" + query;
+
+  var button = document.getElementById("open");
+  button.textContent = TEXT[lang].open;
+  button.href = appUrl;
+
+  // Automatic jump back to the app (the button above is the fallback).
+  setTimeout(function () { location.href = appUrl; }, 500);
 </script>
 </body>
 </html>
