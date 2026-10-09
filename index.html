@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LydraCare</title>
+<meta name="description" content="LydraCare helps seniors and their families manage medications, appointments and daily care.">
 <style>
   :root { color-scheme: light dark; --bg:#F8F5EE; --fg:#1b1b18; --brand:#6B7D5E; --card:#ffffff; --muted:#6c6f66; }
   @media (prefers-color-scheme: dark) { :root { --bg:#000; --fg:#f2f2ee; --card:#262522; --muted:#a4a79f; } }
@@ -18,8 +19,12 @@
           text-decoration:none; }
   a.primary { background:var(--brand); color:#fff; }
   a.secondary { border:2px solid var(--brand); color:var(--brand); }
+  a.store { background:#111; color:#fff; }
+  a.soon { background:transparent; border:2px dashed var(--muted); color:var(--muted); pointer-events:none; }
   [hidden] { display:none !important; }
   small { display:block; margin-top:18px; color:var(--muted); font-size:14px; }
+  footer { margin-top:22px; font-size:14px; color:var(--muted); }
+  footer a { color:var(--muted); margin:0 6px; }
 </style>
 </head>
 <body>
@@ -28,46 +33,82 @@
   <p id="body"></p>
   <a id="open" class="btn primary" href="#" hidden></a>
   <a id="install" class="btn secondary" href="#" hidden></a>
+  <a id="play" class="btn store" href="#"></a>
+  <a id="apple" class="btn store" href="#"></a>
   <small id="hint"></small>
+  <footer>
+    <a id="privacy" href="/privacy.html"></a> ·
+    <a id="terms" href="/terms.html"></a> ·
+    <a href="mailto:support@lydracare.com">support@lydracare.com</a>
+  </footer>
 </main>
 <script>
-  // ---- EDIT THIS: the download link of your preview APK (EAS build page → Install / Download).
-  // Leave the placeholder as-is until you have one: the install button stays hidden.
-  var APK_URL = "PASTE_YOUR_PREVIEW_APK_LINK_HERE";
+  // ---- EDIT THESE when the apps are published. Empty = the button shows "Coming soon".
+  var PLAY_URL = "";   // e.g. https://play.google.com/store/apps/details?id=com.lydracare.app
+  var APPLE_URL = "";  // e.g. https://apps.apple.com/app/id1234567890
+  // Optional: download link of a preview APK for testers (EAS build page). Hidden until set.
+  var APK_URL = "";
 
   var TEXT = {
-    en: { title: "Open LydraCare", inviteBody: "You've been invited to a Family Circle. Tap the button to open the app.", body: "Your caregiver set up your account. Tap the button to open the app and finish in a minute.",
-          open: "Open the app", install: "Install the app", noToken: "This page is for invitation links sent by your caregiver.",
-          hint: "If nothing happens, install the app first, then tap your caregiver's link again." },
-    es: { title: "Abrir LydraCare", inviteBody: "Te invitaron a un círculo familiar. Toca el botón para abrir la app.", body: "Tu cuidador configuró tu cuenta. Toca el botón para abrir la app y terminar en un minuto.",
-          open: "Abrir la app", install: "Instalar la app", noToken: "Esta página es para los enlaces de invitación que envía tu cuidador.",
-          hint: "Si no pasa nada, instala primero la app y vuelve a tocar el enlace de tu cuidador." },
-    fr: { title: "Ouvrir LydraCare", inviteBody: "Vous avez été invité à un cercle familial. Touchez le bouton pour ouvrir l'application.", body: "Votre aidant a créé votre compte. Touchez le bouton pour ouvrir l'application et terminer en une minute.",
-          open: "Ouvrir l'application", install: "Installer l'application", noToken: "Cette page sert aux liens d'invitation envoyés par votre aidant.",
-          hint: "Si rien ne se passe, installez d'abord l'application, puis touchez de nouveau le lien de votre aidant." }
+    en: { title: "LydraCare", tagline: "Medications, appointments and daily care for seniors and their families.",
+          openTitle: "Open LydraCare", inviteBody: "You've been invited to a Family Circle. Tap the button to open the app.", body: "Your caregiver set up your account. Tap the button to open the app and finish in a minute.",
+          open: "Open the app", install: "Install the app (Android test build)",
+          play: "Get it on Google Play", apple: "Download on the App Store", soon: "Coming soon",
+          hint: "If nothing happens, install the app first, then tap your caregiver's link again.",
+          privacy: "Privacy", terms: "Terms" },
+    es: { title: "LydraCare", tagline: "Medicamentos, citas y cuidado diario para mayores y sus familias.",
+          openTitle: "Abrir LydraCare", inviteBody: "Te invitaron a un círculo familiar. Toca el botón para abrir la app.", body: "Tu cuidador configuró tu cuenta. Toca el botón para abrir la app y terminar en un minuto.",
+          open: "Abrir la app", install: "Instalar la app (versión de prueba Android)",
+          play: "Disponible en Google Play", apple: "Descárgala en App Store", soon: "Próximamente",
+          hint: "Si no pasa nada, instala primero la app y vuelve a tocar el enlace de tu cuidador.",
+          privacy: "Privacidad", terms: "Términos" },
+    fr: { title: "LydraCare", tagline: "Médicaments, rendez-vous et soins quotidiens pour les seniors et leurs proches.",
+          openTitle: "Ouvrir LydraCare", inviteBody: "Vous avez été invité à un cercle familial. Touchez le bouton pour ouvrir l'application.", body: "Votre aidant a créé votre compte. Touchez le bouton pour ouvrir l'application et terminer en une minute.",
+          open: "Ouvrir l'application", install: "Installer l'application (version test Android)",
+          play: "Disponible sur Google Play", apple: "Télécharger sur l'App Store", soon: "Bientôt disponible",
+          hint: "Si rien ne se passe, installez d'abord l'application, puis touchez de nouveau le lien de votre aidant.",
+          privacy: "Confidentialité", terms: "Conditions" }
   };
 
   var lang = (navigator.language || "en").slice(0, 2).toLowerCase();
   var t = TEXT[lang] || TEXT.en;
   document.documentElement.lang = TEXT[lang] ? lang : "en";
-  document.getElementById("title").textContent = t.title;
+  document.getElementById("privacy").textContent = t.privacy;
+  document.getElementById("terms").textContent = t.terms;
+
+  // A store button is a real link once its URL is set, otherwise a disabled "Coming soon".
+  function store(id, url, label) {
+    var a = document.getElementById(id);
+    if (url && url.indexOf("https://") === 0) {
+      a.href = url;
+      a.textContent = label;
+    } else {
+      a.className = "btn soon";
+      a.removeAttribute("href");
+      a.textContent = label + " — " + t.soon;
+    }
+  }
+  store("play", PLAY_URL, t.play);
+  store("apple", APPLE_URL, t.apple);
 
   var match = location.pathname.match(/\/(senior-claim|invite)\/([0-9a-fA-F-]{36})/);
   var body = document.getElementById("body");
 
   if (match) {
+    document.getElementById("title").textContent = t.openTitle;
     body.textContent = match[1] === "invite" ? t.inviteBody : t.body;
     var open = document.getElementById("open");
-    // Works even when Android has not verified the https link (custom scheme fallback).
+    // Works even when the OS has not verified the https link (custom scheme fallback).
     open.href = "lydracare://" + match[1] + "/" + match[2];
     open.textContent = t.open;
     open.hidden = false;
     document.getElementById("hint").textContent = t.hint;
   } else {
-    body.textContent = t.noToken;
+    document.getElementById("title").textContent = t.title;
+    body.textContent = t.tagline;
   }
 
-  if (APK_URL && APK_URL.indexOf("http") === 0) {
+  if (APK_URL && APK_URL.indexOf("https://") === 0) {
     var install = document.getElementById("install");
     install.href = APK_URL;
     install.textContent = t.install;
